@@ -1,0 +1,32 @@
+version: "3.8"
+
+# FIXME:
+services:
+  web:
+    build: ./project
+    command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
+    volumes:
+      - ./project:/usr/src/app
+    ports:
+      - 8004:8000
+    environment:
+      # TODO: Change for ENV FILE
+      - ENVIRONMENT=dev
+      - TESTING=0
+      # - DATABASE_URL=postgresql://postgres:postgres@web-db:5432/web_dev
+      # - DATABASE_TEST_URL=postgresql://postgres:postgres@web-db:5432/web_test
+    depends_on:
+      - web-db
+
+  web-db:
+    build:
+      context: ./project/db
+      dockerfile: Dockerfile
+    volumes:
+      - ./data/postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5433:5432
+    environment:
+    # FIXME:
+      # - POSTGRES_USER=postgres
+      # - POSTGRES_PASSWORD=postgres
